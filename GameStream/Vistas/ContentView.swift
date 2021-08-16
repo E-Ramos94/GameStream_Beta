@@ -83,6 +83,8 @@ struct InicioSesionView: View {
     
     @State var isPantallaHomeActive = false
     
+    @State var isUserWrong = false
+    
     
     var body: some View{
         
@@ -120,8 +122,12 @@ struct InicioSesionView: View {
                 
                 Text("¿Olvidaste tu contraseña?").font(.footnote).frame(width: 300, alignment: .trailing).foregroundColor(Color("dark-cian")).padding(.bottom, 30)
                 
-                Button(action: iniciarSesion, label: {
+                Button(action: {iniciarSesion(correo: correo, contrasena: contrasena)}, label: {
                     Text("INICIAR SESIÓN").fontWeight(.bold).foregroundColor(.white).frame(maxWidth: .infinity, alignment: .center).padding(EdgeInsets(top: 11, leading: 18, bottom: 11, trailing: 18)).overlay(RoundedRectangle(cornerRadius: 6.0).stroke(Color("dark-cian"), lineWidth: 1.0).shadow(color: .white, radius: 6))
+                }).alert(isPresented: $isUserWrong, content: {
+                    
+                    Alert(title: Text("Error"), message: Text("Las credenciales son incorrectas. Vuelve a intentarlo"), dismissButton: .default(Text("Ok")))
+                    
                 }).padding(.bottom, 50)
                 
                 Text("Inicia sesión con redes sociales").foregroundColor(.white).frame(maxWidth: .infinity, alignment: .center).padding()
@@ -150,10 +156,21 @@ struct InicioSesionView: View {
         
     }
     
-    func iniciarSesion() {
+    func iniciarSesion(correo: String, contrasena: String) {
         print("Estoy iniciando sesión")
         
-        isPantallaHomeActive = true
+        let validar = SaveData()
+        
+        if (validar.validar(correo: correo, contrasena: contrasena) == true) {
+            
+            isPantallaHomeActive = true
+            
+        } else {
+            
+            isUserWrong = true
+            
+        }
+        
     }
 }
 
