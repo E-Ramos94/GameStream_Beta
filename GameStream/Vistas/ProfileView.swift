@@ -11,6 +11,8 @@ struct ProfileView: View {
     
     @State var nombreUsuario = "Lorem"
     
+    @State var imagenPerfil: UIImage = UIImage(named: "perfilejemplo")!
+    
     var body: some View {
         
         ZStack {
@@ -22,7 +24,7 @@ struct ProfileView: View {
                 
                 VStack{
                     
-                    Image("perfilejemplo").resizable().aspectRatio(contentMode: .fill).frame(width: 118, height: 118).clipShape(Circle())
+                    Image(uiImage: imagenPerfil).resizable().aspectRatio(contentMode: .fill).frame(width: 118, height: 118).clipShape(Circle())
                     
                     Text(nombreUsuario).fontWeight(.bold).foregroundColor(.white)
                     
@@ -39,10 +41,44 @@ struct ProfileView: View {
         }.onAppear(
         
             perform: {
+                
+                if returnUiImage(named: "fotoperfil") != nil {
+                    
+                    imagenPerfil = returnUiImage(named: "fotoperfil")!
+                    
+                } else {
+                    
+                    print("No se encontró foto de perfil guardada en el dispositivo")
+                    
+                }
+                
                 print("Revisando si tengo datos de usuario en mis usersDefault")
+                
+                if UserDefaults.standard.object(forKey: "datosUsuario") != nil {
+                    
+                    nombreUsuario = UserDefaults.standard.stringArray(forKey: "datosUsuario")![2]
+                    
+                } else {
+                    
+                    print("No se encontró información del usuario")
+                    
+                }
             }
         
         )
+        
+    }
+    
+    
+    func returnUiImage(named: String) -> UIImage? {
+        
+        if let dir = try? FileManager.default.url(for: .documentDirectory, in: .userDomainMask, appropriateFor: nil, create: false) {
+            
+            return UIImage(contentsOfFile: URL(fileURLWithPath: dir.absoluteString).appendingPathComponent(named).path)
+            
+        }
+        
+        return nil
         
     }
     
